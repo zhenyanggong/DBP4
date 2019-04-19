@@ -76,8 +76,64 @@ public class GetData{
     	JSONArray users_info = new JSONArray();
 		
 	// Your implementation goes here....		
-    	
-		
+    	try(Statement stmt = oracleConnection.createStatment(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
+    	{
+    		ResultSet rst = stmt.execute("SELECT USER_ID, FIRST_NAME, LAST_NAME, YEAR_OF_BIRTH, MONTH_OF_BIRTH, DAY_OF_BIRTH, GENDER FROM "
+    					+ userTableName);
+
+    		while (rst.next())
+    		{
+    			JSONObject info = new JSONObject();
+    			JSONObject hometown = new JSONObject();
+    			JSONObject current = new JSONObject();
+    			JSONArray friends = new JSONArray();
+    			info.put("user_id", rst.getLong(1));
+    			info.put("first_name", rst.getString(2));
+    			info.put("last_name", rst.getString(3));
+    			info.put("YOB", rst.getLong(4));
+    			info.put("MOB", rst.getLong(5));
+    			info.put("DOB", rst.getLong(6));
+    			info.put("gender", rst.getString(7));
+    			Long uid = rst.getLong(1);
+
+    			Statement stmt1 = oracleConnection.createStatment(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+    			ResultSet rst1 = stmt1.execute("SELECT C.CITY_NAME, C.STATE_NAME, C.COUNTRY_NAME FROM "
+    					+ cityTableName + " C, " + hometownCityTableName + " H "
+    					+ "WHERE H.USER_ID = " + uid + " AND H.CITY_ID = C.CITY_ID");
+    			while(rst1.next())
+    			{
+    				hometown.put("state", rst1.getString(2));
+    				hometown.put("country", rst1.getString(3));
+    				hometown.put("city", rst1.getString(1));
+    			}
+    			info.put("hometown", hometown);
+
+    			ResultSet rst2 = stmt1.execute("SELECT C.CITY_NAME, C.STATE_NAME, C.COUNTRY_NAME FROM "
+    					+ cityTableName + " C, " + currentCityTableName + " H "
+    					+ "WHERE H.USER_ID = " + uid + " AND H.CITY_ID = C.CITY_ID");
+    			while(rst2.next())
+    			{
+    				current.put("state", rst2.getString(2));
+    				current.put("country", rst2.getString(3));
+    				current.put("country", rst2.getString(1));
+    			}
+    			info.put("current", hometown);
+
+    			ResultSet rst3 = stmt1.execute("SELECT DISTINCT USER2_ID FROM "
+    						+ friendsTableName + " WHERE USER1_ID = " + uid);
+    			while(rst3.next())
+    			{
+    				friends.put(rst3.getLong(1));
+    			}
+    			info.put("friends", friends);
+    			user_info.put(info);
+    		}
+    		rst.close();
+    		rst1.close()
+    		rst2.close();
+    		rst3.close();
+    		stmt1.close();
+		}
 		return users_info;
     }
 
