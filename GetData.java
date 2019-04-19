@@ -76,9 +76,9 @@ public class GetData{
     	JSONArray users_info = new JSONArray();
 		
 	// Your implementation goes here....		
-    	try(Statement stmt = oracleConnection.createStatment(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
+    	try(Statement stmt = oracleConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
     	{
-    		ResultSet rst = stmt.execute("SELECT USER_ID, FIRST_NAME, LAST_NAME, YEAR_OF_BIRTH, MONTH_OF_BIRTH, DAY_OF_BIRTH, GENDER FROM "
+    		ResultSet rst = stmt.executeQuery("SELECT USER_ID, FIRST_NAME, LAST_NAME, YEAR_OF_BIRTH, MONTH_OF_BIRTH, DAY_OF_BIRTH, GENDER FROM "
     					+ userTableName);
 
     		while (rst.next())
@@ -96,10 +96,10 @@ public class GetData{
     			info.put("gender", rst.getString(7));
     			Long uid = rst.getLong(1);
 
-    			Statement stmt1 = oracleConnection.createStatment(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-    			ResultSet rst1 = stmt1.execute("SELECT C.CITY_NAME, C.STATE_NAME, C.COUNTRY_NAME FROM "
+    			Statement stmt1 = oracleConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+    			ResultSet rst1 = stmt1.executeQuery("SELECT C.CITY_NAME, C.STATE_NAME, C.COUNTRY_NAME FROM "
     					+ cityTableName + " C, " + hometownCityTableName + " H "
-    					+ "WHERE H.USER_ID = " + uid + " AND H.CITY_ID = C.CITY_ID");
+    					+ "WHERE H.USER_ID = " + uid + " AND H.HOMETOWN_CITY_ID = C.CITY_ID");
     			while(rst1.next())
     			{
     				hometown.put("state", rst1.getString(2));
@@ -107,32 +107,35 @@ public class GetData{
     				hometown.put("city", rst1.getString(1));
     			}
     			info.put("hometown", hometown);
-
-    			ResultSet rst2 = stmt1.execute("SELECT C.CITY_NAME, C.STATE_NAME, C.COUNTRY_NAME FROM "
-    					+ cityTableName + " C, " + currentCityTableName + " H "
-    					+ "WHERE H.USER_ID = " + uid + " AND H.CITY_ID = C.CITY_ID");
+				rst1.close();
+				
+    			ResultSet rst2 = stmt1.executeQuery("SELECT C1.CITY_NAME, C1.STATE_NAME, C1.COUNTRY_NAME FROM "
+    					+ cityTableName + " C1, " + currentCityTableName + " CC "
+    					+ "WHERE CC.USER_ID = " + uid + " AND CC.CURRENT_CITY_ID = C1.CITY_ID");
     			while(rst2.next())
     			{
     				current.put("state", rst2.getString(2));
     				current.put("country", rst2.getString(3));
-    				current.put("country", rst2.getString(1));
+    				current.put("city", rst2.getString(1));
     			}
-    			info.put("current", hometown);
+    			info.put("current", current);
+				rst2.close();
 
-    			ResultSet rst3 = stmt1.execute("SELECT DISTINCT USER2_ID FROM "
+    			ResultSet rst3 = stmt1.executeQuery("SELECT DISTINCT USER2_ID FROM "
     						+ friendsTableName + " WHERE USER1_ID = " + uid);
     			while(rst3.next())
     			{
     				friends.put(rst3.getLong(1));
     			}
+				rst3.close();
+
     			info.put("friends", friends);
-    			user_info.put(info);
+    			users_info.put(info);
+				stmt1.close();
+				
     		}
-    		rst.close();
-    		rst1.close()
-    		rst2.close();
-    		rst3.close();
-    		stmt1.close();
+			rst.close();
+			stmt.close();
 		}
 		return users_info;
     }
