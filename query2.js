@@ -20,6 +20,6 @@ function unwind_friends(dbname){
     	}
     });
     */
-    db.users.aggregate([{$unwind : "$friends"},{$project : {_id : 0, user_id : 1, friends : 1}},{$out : "$flat_users"}])
+    db.users.aggregate([{$unwind : "$friends"}, {$project : {_id : 0, user_id : 1, friends : 1}},{$out : "flat_users"}]);
     // returns nothing. It creates a collection instead as specified above.
 }
