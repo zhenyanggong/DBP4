@@ -14,7 +14,7 @@ function cities_table(dbname) {
 
     db.books.aggregate(
    	[
-     { $group : { _id : "$hometown.city", users: { $push: "$user_id" } } }
+     { $group : { _id : "$hometown.city", users: { $push: "$user_id" } } },
      { $out: "cities"}
    	])
     // Returns nothing. Instead, it creates a collection inside the datbase.
