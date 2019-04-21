@@ -5,7 +5,12 @@ function find_user(city, dbname){
     var results = [];
     // TODO: return a Javascript array of user_ids. 
     // db.users.find(...);
-    db.users.find({"hometown.city" : city}).forEach( function(myDoc) { results.push(myDoc.user_id); });
+    var townboys = db.users.find({"hometown.city" : city});
+    
+    for (var i = 0; i < townboys.length(); i++)
+    {
+        results.push(townboys[i]["user_id"]);
+    }
     // See test.js for a partial correctness check.  
     // The result will be an array of integers. The order does not matter.                                                               
     return results;

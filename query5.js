@@ -12,10 +12,10 @@ function oldest_friend(dbname){
   var friends = {};
 
   // first get all friends info into friedns dic
-  db.users.find({}).forEach( function(user) {
+  db.users.find().forEach( function(user) {
   	user.friends.forEach( function(user_friend) {
-  		friedns[user.user_id].add(user_friend);
-  		friedns[user_friend].add(user.user_id);
+  		friends["user.user_id"].add(user_friend);
+  		friends["user_friend"].add(user.user_id);
   	});
   });
 
