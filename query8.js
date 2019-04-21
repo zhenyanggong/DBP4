@@ -5,22 +5,30 @@
 
 var city_average_friendcount_mapper = function() {
   // implement the Map function of average friend count
-  emit(this.hometown.city, this.friends.length);
+  var temp = {
+    num_user: 1,
+    num_friends: this.friends.length
+  };
+  emit(this.hometown.city, temp);
 };
 
 var city_average_friendcount_reducer = function(key, values) {
   // implement the reduce function of average friend count
-  var sum = 0;
-  for (var i = 0; i < values.length; i++) {
-  	sum += values[i];
+  var temp = {
+    num_user: 0,
+    num_friends: 0
   }
-  return sum/values.length;
+  for (var i = 0; i < values.length; i++) {
+  	temp.num_user += values[i].num_user;
+    temp.num_friends += values[i].num_friends;
+  }
+  return temp;
 };
 
 var city_average_friendcount_finalizer = function(key, reduceVal) {
   // We've implemented a simple forwarding finalize function. This implementation 
   // is naive: it just forwards the reduceVal to the output collection.
   // Feel free to change it if needed.
-  var ret = reduceVal;
+  var ret = reduceVal.num_friends / reduceVal.num_user;
   return ret;
 }
