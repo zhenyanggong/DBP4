@@ -19,19 +19,22 @@ function suggest_friends(year_diff, dbname) {
     // TODO: implement suggest friends
     // Return an array of arrays.
     db.users.find({"gender" : "male"}).forEach(function(UA){
-        var B = db.users.find({"gender" : "female", "hometown.city" : UA.hometown.city});
+        var B = db.users.find({"gender" : "female"});
         B.forEach(function(UB){
-            if(Math.abs(UA.YOB - UB.YOB) < year_diff)
+            if (UB.hometown.city === UA.hometown.city)
             {
-                if(UA.user_id < UB.user_id && UA.friends.indexOf(UB.user_id) == -1)
+                if(Math.abs(UA.YOB - UB.YOB) < year_diff)
                 {
-                    var temp = [UA.user_id, UB.user_id];
-                    pairs.push(temp);
-                }
-                else if (UB.user_id < UA.user_id && UB.friends.indexOf(UA.user_id) == -1)
-                {
-                    var temp = [UA.user_id, UB.user_id];
-                    pairs.push(temp);
+                    if(UA.user_id < UB.user_id && UA.friends.indexOf(UB.user_id) === -1)
+                    {
+                        var temp = [UA.user_id, UB.user_id];
+                        pairs.push(temp);
+                    }
+                    else if (UB.user_id < UA.user_id && UB.friends.indexOf(UA.user_id) === -1)
+                    {
+                        var temp = [UA.user_id, UB.user_id];
+                        pairs.push(temp);
+                    }
                 }
             }
         });
