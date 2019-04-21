@@ -1,5 +1,5 @@
-uniqname = uniqname
-password = password
+uniqname = lixon
+password = Hlx457466494
 
 compile:
 	javac -Xlint:-unchecked -cp "ojdbc6.jar:json-20151123.jar:json_simple-1.1.jar:" Main.java GetData.java
@@ -15,25 +15,25 @@ run:
 setupsampledb:
 	@echo "You must edit the following line in Makefile to correct the uniqname and password"
 	@echo "You may need to run 'module load mongodb' as well on CAEN."
-	mongoimport --host eecs484.eecs.umich.edu --username $(uniqname) --password $(password) --collection users --db $(uniqname) --file  sample.json --jsonArray
+	mongoimport --host eecs484.eecs.umich.edu --username lixon --password Hlx457466494 --collection users --db lixon --file  sample.json --jsonArray
 
 setupmydb:
 	@echo "You must edit the following line in Makefile to correct the uniqname and password"
 	@echo "You may need to run 'module load mongodb' as well on CAEN."
-	mongoimport --host eecs484.eecs.umich.edu --username $(uniqname) --password $(password)  --collection users --db $(uniqname) --file  output.json --jsonArray
+	mongoimport --host eecs484.eecs.umich.edu --username lixon --password Hlx457466494  --collection users --db lixon --file  output.json --jsonArray
 
 
 mongoquerytest:
 	@echo "Running test.js using the database. Run make setupsampledb or make setupmydb before this."
 	@echo "You must edit the following line in Makefile to correct the uniqname and password"
 	@echo "You may need to run 'module load mongodb' as well on CAEN."
-	mongo $(uniqname) -u $(uniqname) -p $(password) --host eecs484.eecs.umich.edu < test.js
+	mongo lixon -u lixon -p Hlx457466494 --host eecs484.eecs.umich.edu < test.js
 	@echo "Local tests in test.js have been run."
 	@echo "Optional: Do make dropdatabase to remove the mongo database."
 
 dropdatabase:
 	@echo "You must edit the following line in Makefile to correct the uniqname and password"
-	mongo $(uniqname) -u $(uniqname) -p $(password) --host eecs484.eecs.umich.edu --eval "db.users.drop()"
+	mongo lixon -u lixon -p Hlx457466494 --host eecs484.eecs.umich.edu --eval "db.users.drop()"
 
 
 submit:
