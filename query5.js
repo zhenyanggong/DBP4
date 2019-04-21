@@ -14,15 +14,25 @@ function oldest_friend(dbname){
   // first get all friends info into friedns dic
   db.users.find().forEach( function(user) {
   	user.friends.forEach( function(user_friend) {
-  		friends["user.user_id"].add(user_friend);
-  		friends["user_friend"].add(user.user_id);
+  		if (user.user_id in friends) {
+  			friends["user.user_id"].add(user_friend);
+  		}
+  		else {
+  			friends["user.user_id"] = new Set();
+  		}
+  		if (user_friend in friends) {
+  			friends["user_friend"].add(user.user_id);
+  		}
+  		else {
+  			friends["user_friend"] = new Set();
+  		}
   	});
   });
 
   // sort friends set
   for (var key in Object.keys(friends)) {
   	var tmep = db.users.find(
-   		{user_id: { $in: Array.from(friend[key]) } },
+   		{user_id: { $in: Array.from(friends[key]) } },
    		{user_id: 1, YOB: 1}).sort({YOB: 1, user_id: 1}).limit(1);
   	//print(temp)
   	results[key] = temp.user_id;
