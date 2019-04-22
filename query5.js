@@ -10,36 +10,54 @@ function oldest_friend(dbname){
   db = db.getSiblingDB(dbname);
   var results = {};
   var friends = {};
+  //print("hello");
 
-  // first get all friends info into friedns dic
   db.users.find().forEach( function(user) {
-  	user.friends.forEach( function(user_friend) {
-  		if (user.user_id in friends) {
-  			friends["user.user_id"].add(user_friend);
-  		}
-  		else {
-  			friends["user.user_id"] = new Set();
-  		}
-  		if (user_friend in friends) {
-  			friends["user_friend"].add(user.user_id);
-  		}
-  		else {
-  			friends["user_friend"] = new Set();
-  		}
-  	});
+  		user.friends.forEach( function(friend_id) {
+  			// check results[friend_id]
+  			//print("ok");
+  			if (friend_id in results) {
+  				if (!(results[friend_id] in friends)) {
+  					friends[results[friend_id]] = db.users.find({"user_id": results[friend_id]}).next();
+  				}
+  				var big_user = friends[results[friend_id]];
+  				//print(big_user);
+
+  				if (user.YOB < big_user.YOB) {
+  					results[friend_id] = user.user_id;
+  				}
+  				else if (user.YOB == big_user.YOB && user.user_id < big_user.user_id) {
+  					results[friend_id] = user.user_id;
+  				}
+  			}
+  			else {
+  				results[friend_id] = user.user_id;
+  			}
+  			// check results[user.user_id]
+  			if (user.user_id in results) {
+  				if (!(friend_id in friends)) {
+  					friends[friend_id] = db.users.find({"user_id": friend_id}).next();
+  				}
+  				var temp_user = friends[friend_id];
+  				if (!(user.user_id in friends)) {
+  					friends[user.user_id] = db.users.find({"user_id": results[user.user_id]}).next();
+  				}
+  				var big_user = friends[user.user_id];
+  				//print(temp_user);
+  				if (temp_user.YOB < big_user.YOB) {
+  					results[user.user_id] = friend_id;
+  				}
+  				else if (temp_user.YOB == big_user.YOB && temp_user.user_id < big_user.user_id) {
+  					results[user.user_id] = friend_id;
+  				}
+  			}
+  			else {
+  				results[user.user_id] = friend_id;
+  			}
+  		});
   });
-
-  // sort friends set
-  for (var key in Object.keys(friends)) {
-  	var tmep = db.users.find(
-   		{user_id: { $in: Array.from(friends[key]) } },
-   		{user_id: 1, YOB: 1}).sort({YOB: 1, user_id: 1}).limit(1);
-  	//print(temp)
-  	results[key] = temp.user_id;
-  }
-
 
   // TODO: implement oldest friends
   // return an javascript object described above
-  return results
+  return results;
 }
